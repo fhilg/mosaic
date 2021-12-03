@@ -118,14 +118,30 @@ public class TransformationMatrix extends Matrix4d {
     }
 
     /**
-     * Adds translation to this transformation matrix.
+     * Adds translation to this transformation matrix M.
+     *
+     * This is equivalent to
+     *   M' = M * T
+     * where M' is the resulting matrix and T is a common translation matrix:
+     *  /  1  0  0  t.x \
+     * |   0  1  0  t.y  |
+     * |   0  0  1  t.z  |
+     *  \  0  0  0  1   /
      */
     public TransformationMatrix translate(Vector3d t) {
         return translate(t.x, t.y, t.z);
     }
 
     /**
-     * Adds translation to this transformation matrix.
+     * Adds translation to this transformation matrix M.
+     *
+     * This is equivalent to
+     *   M' = M * T
+     * where M' is the resulting matrix and T is a common translation matrix:
+     *  /  1  0  0  x \
+     * |   0  1  0  y  |
+     * |   0  0  1  z  |
+     *  \  0  0  0  1 /
      */
     public TransformationMatrix translate(double x, double y, double z) {
         for (int i = 0; i < 4; i++) {
