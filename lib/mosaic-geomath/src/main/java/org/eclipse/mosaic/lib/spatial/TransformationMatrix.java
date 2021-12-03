@@ -151,7 +151,15 @@ public class TransformationMatrix extends Matrix4d {
     }
 
     /**
-     * Adds scaling to this transformation matrix.
+     * Adds scaling to this transformation matrix M.
+     *
+     * This is equivalent to
+     *   M' = M * S
+     * where M' is the resulting matrix and S is a common scaling matrix:
+     *  /  sx 0  0  0 \
+     * |   0  sy 0  0  |
+     * |   0  0  sz 0  |
+     *  \  0  0  0  1 /
      */
     public TransformationMatrix scale(double sx, double sy, double sz) {
         for (int i = 0; i < 4; i++) {
