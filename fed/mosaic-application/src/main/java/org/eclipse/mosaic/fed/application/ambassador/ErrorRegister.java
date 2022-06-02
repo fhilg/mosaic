@@ -45,6 +45,8 @@ public enum ErrorRegister {
     SIMULATION_KERNEL_ConfigurationPathAlreadySet(0x01000027, "The configuration path was already set."),
     SIMULATION_KERNEL_CentralNavigationComponentNotSet(0x01000028, "The CentralNavigationComponent was not set."),
     SIMULATION_KERNEL_CentralNavigationComponentAlreadySet(0x01000029, "The CentralNavigationComponent was already set."),
+    SIMULATION_KERNEL_CentralPerceptionComponentNotSet(0x01000200, "The CentralPerceptionComponent was not set."),
+    SIMULATION_KERNEL_CentralPerceptionComponentAlreadySet(0x01000201, "The CentralPerceptionComponent was already set."),
     // 0x01000030 to 0x0100003F unit simulator
     UNIT_SIMULATOR_IdAlreadyAssigned(0x01000030, "The id is already assigned."),
     UNIT_SIMULATOR_IdFromUnitIsNotInMap(0x01000031, "The unit with the id couldn't be found."),
@@ -69,6 +71,7 @@ public enum ErrorRegister {
     // 0x01000080 to 0x0100008F vehicle
     VEHICLE_UnknownEvent(0x01000080, "Process unknown event."),
     VEHICLE_NoEventResource(0x01000081, "Process event with no resource."),
+    VEHICLE_NotElectric(0x01000082, "A conventional vehicle cannot handle battery data."),
     // 0x01000090 to 0x0100009F traffic management center
     TRAFFIC_MANAGEMENT_CENTER_UnknownEvent(0x01000090, "Process unknown event."),
     TRAFFIC_MANAGEMENT_CENTER_NoEventResource(0x01000091, "Process event with no resource."),

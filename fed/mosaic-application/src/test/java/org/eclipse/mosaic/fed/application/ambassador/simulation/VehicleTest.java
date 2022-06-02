@@ -23,7 +23,9 @@ import org.eclipse.mosaic.fed.application.ambassador.SimulationKernel;
 import org.eclipse.mosaic.fed.application.ambassador.SimulationKernelRule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.AdHocModuleConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.communication.V2xMessageTransmission;
 import org.eclipse.mosaic.lib.enums.AdHocChannel;
 import org.eclipse.mosaic.lib.enums.DriveDirection;
@@ -75,8 +77,8 @@ public class VehicleTest {
     public EtsiPayloadConfigurationRule payloadConfigurationRule = new EtsiPayloadConfigurationRule();
 
     @Rule
-    public SimulationKernelRule simulationKernelRule =
-            new SimulationKernelRule(eventManager, interactable, mock(CentralNavigationComponent.class));
+    public SimulationKernelRule simulationKernelRule = new SimulationKernelRule(eventManager, interactable,
+            mock(CentralNavigationComponent.class), mock(CentralPerceptionComponent.class));
 
     private final AtomicReference<Interaction> interactionSentByVehicle = new AtomicReference<>(null);
 
@@ -87,6 +89,7 @@ public class VehicleTest {
             return null;
         }).when(interactable).triggerInteraction(any(Interaction.class));
 
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
         SimulationKernel.SimulationKernel.setClassLoader(ClassLoader.getSystemClassLoader());
     }
 

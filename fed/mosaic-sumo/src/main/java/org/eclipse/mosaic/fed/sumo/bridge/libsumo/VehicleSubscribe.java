@@ -12,6 +12,7 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
@@ -19,6 +20,8 @@ import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
 public class VehicleSubscribe implements org.eclipse.mosaic.fed.sumo.bridge.api.VehicleSubscribe {
 
     public void execute(Bridge bridge, String vehicleId, long startTime, long endTime) {
-        SimulationSimulateStep.VEHICLE_SUBSCRIPTIONS.add(vehicleId);
+        if (!SimulationSimulateStep.VEHICLE_SUBSCRIPTIONS.contains(vehicleId)) {
+            SimulationSimulateStep.VEHICLE_SUBSCRIPTIONS.add(vehicleId);
+        }
     }
 }

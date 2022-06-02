@@ -12,15 +12,21 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 
 import org.eclipse.sumo.libsumo.TrafficLight;
 
 public class TrafficLightGetCurrentProgram implements org.eclipse.mosaic.fed.sumo.bridge.api.TrafficLightGetCurrentProgram {
 
-    public String execute(Bridge bridge, String tlId) {
-        return TrafficLight.getProgram(tlId);
+    public String execute(Bridge bridge, String tlId) throws CommandException {
+        try {
+            return TrafficLight.getProgram(tlId);
+        } catch(IllegalArgumentException e) {
+            throw new CommandException("Could not read program id for Traffic Light: " + tlId);
+        }
     }
 }

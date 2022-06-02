@@ -12,9 +12,11 @@
  *
  * Contact: mosaic@fokus.fraunhofer.de
  */
+
 package org.eclipse.mosaic.fed.sumo.bridge.libsumo;
 
 import org.eclipse.mosaic.fed.sumo.bridge.Bridge;
+import org.eclipse.mosaic.fed.sumo.bridge.CommandException;
 import org.eclipse.mosaic.lib.geo.CartesianPoint;
 import org.eclipse.mosaic.lib.util.objects.Position;
 
@@ -23,8 +25,17 @@ import org.eclipse.sumo.libsumo.TraCIPosition;
 
 public class JunctionGetPosition implements org.eclipse.mosaic.fed.sumo.bridge.api.JunctionGetPosition {
 
-    public Position execute(Bridge bridge, String junctionId) {
-        TraCIPosition traCIPosition = Junction.getPosition(junctionId);
-        return new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
+    public Position execute(Bridge bridge, String junctionId) throws CommandException {
+        try {
+            TraCIPosition traCIPosition = Junction.getPosition(junctionId);
+            try {
+                return new Position(CartesianPoint.xyz(traCIPosition.getX(), traCIPosition.getY(), traCIPosition.getZ() < -1000 ? 0 : traCIPosition.getZ()));
+            } finally {
+                traCIPosition.delete();
+            }
+        } catch(IllegalArgumentException e) {
+            throw new CommandException("Could not position of junction with ID: " + junctionId);
+        }
+
     }
 }

@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import org.eclipse.mosaic.fed.application.ambassador.eventresources.RemoveVehicles;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.CentralNavigationComponent;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.AbstractSimulationUnit;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.CentralPerceptionComponent;
 import org.eclipse.mosaic.fed.application.app.TestApplicationWithSpy;
 import org.eclipse.mosaic.fed.application.app.TestVehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.Application;
@@ -31,6 +32,7 @@ import org.eclipse.mosaic.fed.application.app.api.ChargingStationApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficLightApplication;
 import org.eclipse.mosaic.fed.application.app.api.TrafficManagementCenterApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.mapping.ChargingStationRegistration;
 import org.eclipse.mosaic.interactions.mapping.RsuRegistration;
 import org.eclipse.mosaic.interactions.mapping.ServerRegistration;
@@ -63,8 +65,8 @@ public class UnitSimulatorTest {
     private EventManager eventManager = event -> registeredEvents.add(event);
 
     @Rule
-    public SimulationKernelRule simulationKernel =
-            new SimulationKernelRule(eventManager, interactable, Mockito.mock(CentralNavigationComponent.class));
+    public SimulationKernelRule simulationKernel = new SimulationKernelRule(eventManager, interactable,
+            Mockito.mock(CentralNavigationComponent.class), Mockito.mock(CentralPerceptionComponent.class));
 
     @Rule
     public IpResolverRule ipResolverRule = new IpResolverRule();
@@ -75,6 +77,7 @@ public class UnitSimulatorTest {
         registeredEvents.clear();
 
         SimulationKernel.SimulationKernel.setClassLoader(ClassLoader.getSystemClassLoader());
+        SimulationKernel.SimulationKernel.setConfiguration(new CApplicationAmbassador());
     }
 
     /**

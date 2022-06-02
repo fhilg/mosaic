@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface TrafficLightGetControlledLanes {
     /**
-     * This method executes the command with the given arguments in order to get the controlled lines in the traffic light simulations.
+     * This method executes the command with the given arguments in order to get the controlled lanes in the traffic light simulations.
      *
      * @param bridge Connection to Traci.
      * @param tlId   Id of the traffic light.

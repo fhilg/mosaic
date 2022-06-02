@@ -16,6 +16,7 @@
 package org.eclipse.mosaic.rti.time;
 
 import org.eclipse.mosaic.lib.util.EfficientPriorityQueue;
+import org.eclipse.mosaic.lib.util.PerformanceMonitor;
 import org.eclipse.mosaic.rti.ExternalWatchDog;
 import org.eclipse.mosaic.rti.MosaicComponentParameters;
 import org.eclipse.mosaic.rti.TIME;
@@ -163,6 +164,7 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
                 fed.finishSimulation();
             }
         } finally {
+            PerformanceMonitor.getInstance().logSummary(logger);
             // always print simulation finished even if federate throws exception on finishing
             printSimulationFinished(durationMs, statusCode);
             federation.getMonitor().onEndSimulation(federation.getFederationManagement(), this, durationMs, statusCode);
@@ -186,7 +188,7 @@ public abstract class AbstractTimeManagement extends Observable implements TimeM
         logger.info("Ended: " + dateFormat.format(new Date(currentTime)));
         logger.info("Duration: {} (RTF: {})",
                 DurationFormatUtils.formatDuration(durationMs, "HH'h' mm'm' ss.SSS's'"),
-                durationMs > 0 ? FORMAT_TWO_DIGIT.format((getEndTime() / TIME.MILLI_SECOND) / durationMs) : 0
+                durationMs > 0 ? FORMAT_TWO_DIGIT.format((time / TIME.MILLI_SECOND) / durationMs) : 0
         );
         logger.info("");
         if (statusCode == STATUS_CODE_SUCCESS) {

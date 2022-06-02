@@ -16,7 +16,7 @@
 package org.eclipse.mosaic.app.tutorial;
 
 import org.eclipse.mosaic.fed.application.app.AbstractApplication;
-import org.eclipse.mosaic.fed.application.app.api.os.RoadSideUnitOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.os.ServerOperatingSystem;
 import org.eclipse.mosaic.lib.enums.SensorType;
 import org.eclipse.mosaic.lib.geo.GeoCircle;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
@@ -31,7 +31,7 @@ import org.eclipse.mosaic.rti.TIME;
  * about certain hazards on the road. The hazard is hard-coded for tutorial purposes,
  * in more realistic scenarios the location would've been updated dynamically.
  */
-public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingSystem> {
+public class WeatherServerApp extends AbstractApplication<ServerOperatingSystem> {
 
     /**
      * Send hazard location at this interval, in seconds.
@@ -61,6 +61,7 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
     public void onStartup() {
         getLog().infoSimTime(this, "Initialize WeatherServer application");
         getOs().getCellModule().enable();
+        getLog().infoSimTime(this, "Setup weather server {} at time {}", getOs().getId(), getOs().getSimulationTime());
         getLog().infoSimTime(this, "Activated Cell Module");
         sample();
     }
@@ -113,7 +114,7 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
         return new Denm(routing,
                 new DenmContent(
                         getOs().getSimulationTime(),
-                        getOs().getInitialPosition(),
+                        null,
                         HAZARD_ROAD,
                         SENSOR_TYPE,
                         strength,
@@ -122,7 +123,8 @@ public class WeatherServerApp extends AbstractApplication<RoadSideUnitOperatingS
                         HAZARD_LOCATION,
                         null,
                         null
-                )
+                ),
+                200
         );
     }
 

@@ -179,7 +179,8 @@
                 "VehicleUpdates",
                 "InductionLoopDetectorSubscription",
                 "LaneAreaDetectorSubscription",
-                "TrafficLightSubscription"
+                "TrafficLightSubscription",
+                "VehicleSightDistanceConfiguration"
             ],
             "javaClasspathEntries": []
         },
@@ -196,6 +197,8 @@
                 "TrafficLightRegistration",
                 "TrafficSignRegistration",
                 "VehicleRegistration",
+                "ServerRegistration",
+                "TmcRegistration",
                 "ItefLogging",
                 "VehicleLaneChange",
                 "LanePropertyChange",

@@ -8,7 +8,7 @@ kind: Pod
 spec:
   containers:
   - name: maven-sumo
-    image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.11.0
+    image: eclipsemosaic/mosaic-ci:jdk8-sumo-1.13.0
     command:
     - cat
     tty: true
@@ -135,20 +135,23 @@ spec:
             }
             steps {
                 container('jnlp') {
-                    // it's not possible to deploy from the maven-sumo container, as there's something wrong in
-                    // finding .m2/settings.xml and .m2/repository even if mounted. executing mvn -X prints
-                    // some weird paths:
-                    // > [DEBUG] Reading user settings from ?/.m2/settings.xml
-                    // which makes it impossible to mount the correct settings.xml
-                    // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
-                    // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
-                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn install -DskipTests'
-                    sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
+                    // sometimes this fails for unknown reason, so lets try it three times
+                    retry(3) {
+                        // it's not possible to deploy from the maven-sumo container, as there's something wrong in
+                        // finding .m2/settings.xml and .m2/repository even if mounted. executing mvn -X prints
+                        // some weird paths:
+                        // > [DEBUG] Reading user settings from ?/.m2/settings.xml
+                        // which makes it impossible to mount the correct settings.xml
+                        // Therefore we are using a second container which is able to read the mounted settings.xml and is able to
+                        // deploy the artifacts. The only drawback is, that this step again builds all artifacts.
+                        sh '/opt/tools/apache-maven/3.6.3/bin/mvn install -DskipTests'
+                        sh '/opt/tools/apache-maven/3.6.3/bin/mvn deploy -DskipTests'
+                    }
                 }
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'bundle/target/eclipse-mosaic-*.zip', caseSensitive: false, onlyIfSuccessful: true
+                    archiveArtifacts artifacts: 'bundle/target/eclipse-mosaic-*.*', caseSensitive: false, onlyIfSuccessful: true
                 }
             }
         }

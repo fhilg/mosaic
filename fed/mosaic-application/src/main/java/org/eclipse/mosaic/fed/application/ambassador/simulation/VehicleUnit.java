@@ -21,9 +21,14 @@ import org.eclipse.mosaic.fed.application.ambassador.navigation.INavigationModul
 import org.eclipse.mosaic.fed.application.ambassador.navigation.NavigationModule;
 import org.eclipse.mosaic.fed.application.ambassador.navigation.RoadPositionFactory;
 import org.eclipse.mosaic.fed.application.ambassador.simulation.communication.CamBuilder;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionConfiguration;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SimplePerceptionModule;
+import org.eclipse.mosaic.fed.application.ambassador.simulation.perception.SumoPerceptionModule;
 import org.eclipse.mosaic.fed.application.app.api.CommunicationApplication;
 import org.eclipse.mosaic.fed.application.app.api.VehicleApplication;
 import org.eclipse.mosaic.fed.application.app.api.os.VehicleOperatingSystem;
+import org.eclipse.mosaic.fed.application.app.api.perception.PerceptionModule;
+import org.eclipse.mosaic.fed.application.config.CApplicationAmbassador;
 import org.eclipse.mosaic.interactions.vehicle.VehicleLaneChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleParametersChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleResume;
@@ -33,11 +38,11 @@ import org.eclipse.mosaic.interactions.vehicle.VehicleSlowDown;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange;
 import org.eclipse.mosaic.interactions.vehicle.VehicleSpeedChange.VehicleSpeedChangeType;
 import org.eclipse.mosaic.interactions.vehicle.VehicleStop;
-import org.eclipse.mosaic.lib.enums.VehicleClass;
 import org.eclipse.mosaic.lib.enums.VehicleStopMode;
 import org.eclipse.mosaic.lib.geo.GeoPoint;
 import org.eclipse.mosaic.lib.objects.road.IRoadPosition;
 import org.eclipse.mosaic.lib.objects.v2x.etsi.cam.VehicleAwarenessData;
+import org.eclipse.mosaic.lib.objects.vehicle.BatteryData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleData;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleRoute;
 import org.eclipse.mosaic.lib.objects.vehicle.VehicleType;
@@ -55,6 +60,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     private final NavigationModule navigationModule;
 
     @Nonnull
+    private final PerceptionModule<SimplePerceptionConfiguration> perceptionModule;
+
+    @Nonnull
     private VehicleParameters vehicleParameters;
 
     /**
@@ -70,6 +78,13 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         vehicleParameters = new VehicleParameters(vehicleType);
         navigationModule = new NavigationModule(this);
         navigationModule.setCurrentPosition(initialPosition);
+
+        if (SimulationKernel.SimulationKernel.getConfiguration().perceptionConfiguration.perceptionBackend
+                == CApplicationAmbassador.CPerception.PerceptionBackend.SUMO) {
+            perceptionModule = new SumoPerceptionModule(this);
+        } else {
+            perceptionModule = new SimplePerceptionModule(this, getOsLog());
+        }
     }
 
     @Override
@@ -118,7 +133,7 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
 
         if (!handleEventResource(resource, event.getNice())) {
             getOsLog().error("Unknown event resource: {}", event);
-            throw new RuntimeException(ErrorRegister.VEHICLE_NoEventResource.toString());
+            throw new RuntimeException(ErrorRegister.VEHICLE_UnknownEvent.toString());
         }
     }
 
@@ -126,6 +141,9 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         if (resource instanceof VehicleData) {
             updateVehicleInfo((VehicleData) resource);
             return true;
+        }
+        if (resource instanceof BatteryData) {
+            throw new RuntimeException(ErrorRegister.VEHICLE_NotElectric.toString());
         }
         return false;
     }
@@ -265,11 +283,11 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
         }
 
         VehicleAwarenessData awarenessData = new VehicleAwarenessData(
-                VehicleClass.Car,
+                getInitialVehicleType().getVehicleClass(),
                 vehicleData.getSpeed(),
                 vehicleData.getHeading(),
                 getInitialVehicleType().getLength(),
-                0,
+                getInitialVehicleType().getWidth(),
                 vehicleData.getDriveDirection(),
                 vehicleData.getRoadPosition().getLaneIndex(),
                 longitudinalAcceleration
@@ -335,5 +353,11 @@ public class VehicleUnit extends AbstractSimulationUnit implements VehicleOperat
     @Override
     public IRoadPosition getRoadPosition() {
         return Objects.requireNonNull(navigationModule.getVehicleData()).getRoadPosition();
+    }
+
+    @Nonnull
+    @Override
+    public PerceptionModule<SimplePerceptionConfiguration> getPerceptionModule() {
+        return perceptionModule;
     }
 }
